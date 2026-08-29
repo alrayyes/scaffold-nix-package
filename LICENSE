@@ -1,0 +1,9 @@
+No license has been chosen yet.
+
+This is a template repository. Whoever stamps a real project out of it picks
+a license — MIT, Apache-2.0, GPL-3.0-or-later, or whatever fits the
+project's own goals — and replaces this file with its full text before the
+project ships. Until then, nothing here is licensed for reuse.
+
+Also update `license` in `package.nix`'s `meta` attrset to match, and the
+SPDX identifier in `README.md`.

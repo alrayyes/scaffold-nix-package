@@ -1,0 +1,83 @@
+# The same commands CI runs, so the two cannot drift. The hook catches it
+# early; CI is the gate that cannot be skipped.
+#
+# Grows a job here the same PR that adds the tool it runs — a linter with no
+# hook is a linter you only meet at CI.
+#
+# statix, deadnix and nixpkgs-fmt aren't installed globally by this repo —
+# `nix develop` (or direnv, see README.md) puts all three on PATH, the same
+# packages the CI container installs. Run that once per shell before relying
+# on these hooks.
+
+# pre-commit may write. Let every fixer run and restage what it touched — a
+# commit should not fail over a quote style a tool can settle by itself.
+pre-commit:
+  jobs:
+    - name: nixpkgs-fmt
+      glob: "*.nix"
+      run: nixpkgs-fmt {staged_files}
+      stage_fixed: true
+
+    # Reads only, so nothing to restage. Invoked bare rather than on
+    # {staged_files}: statix and deadnix both walk the tree themselves, and
+    # naming a path here is how the hook and CI end up checking different
+    # files. The glob only decides whether it's worth running at all.
+    - name: statix
+      glob: "*.nix"
+      run: statix check .
+
+    - name: deadnix
+      glob: "*.nix"
+      run: deadnix --fail .
+
+    # Prettier decides the layout, markdownlint then judges what Prettier
+    # produced. The other order has markdownlint fixing something Prettier is
+    # about to overwrite.
+    - name: prettier
+      glob: "*.{md,yml,yaml}"
+      run: bunx prettier --write {staged_files}
+      stage_fixed: true
+
+    - name: markdownlint
+      glob: "*.md"
+      run: bunx markdownlint-cli2 {staged_files}
+
+commit-msg:
+  jobs:
+    # Resolved from node_modules rather than fetched by bunx: commitlint has to
+    # load the config its own config extends, and bunx cannot resolve a sibling
+    # package for it. Run `bun install` if this cannot find itself.
+    - name: commitlint
+      run: bunx commitlint --edit {1}
+
+# pre-push never writes. A hook rewriting files under a push leaves the pushed
+# commit and the working tree disagreeing about what was reviewed.
+#
+# Parallel because of that: nothing here touches a file, so no job can be
+# reading what another is rewriting.
+pre-push:
+  parallel: true
+  jobs:
+    # Builds every package and devShell output for the current system and
+    # evaluates the rest — the same thing `nix flake check` always did, run
+    # here rather than reinvented as a separate build+eval pair of jobs.
+    - name: flake-check
+      run: nix flake check
+
+    - name: nixpkgs-fmt
+      run: nixpkgs-fmt --check .
+
+    - name: statix
+      run: statix check .
+
+    - name: deadnix
+      run: deadnix --fail .
+
+    # These are `package.json` scripts rather than the commands spelled out,
+    # because CI runs the same ones and a literal copied into two files drifts
+    # the first time somebody edits one of them.
+    - name: prettier
+      run: bun run format:check
+
+    - name: markdownlint
+      run: bun run lint:md

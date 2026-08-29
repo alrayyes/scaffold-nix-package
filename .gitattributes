@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.{cmd,bat,ps1} text eol=crlf
+*.png binary
+*.jpg binary
+*.ico binary
+*.sh text eol=lf
+flake.lock -diff linguist-generated

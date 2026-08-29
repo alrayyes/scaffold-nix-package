@@ -1,0 +1,97 @@
+# The gate. Every command in here has a twin in lefthook.yml, so a green
+# pre-commit means a green pipeline and neither can drift into being the only
+# place a rule is enforced.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Least privilege by default. A job that needs more says so itself.
+permissions:
+  contents: read
+
+# A second push to the same branch makes the first run pointless.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Flakes are still an experimental Nix feature; the nixos/nix image ships
+  # with both disabled by default, so every job that runs `nix` needs this.
+  NIX_CONFIG: "experimental-features = nix-command flakes"
+
+jobs:
+  # Proves the packaging itself, not just the linters around it: evaluates
+  # every flake output for the runner's system and builds the derivation the
+  # template actually ships.
+  build:
+    runs-on: ubuntu-24.04
+    container:
+      # Pinned by digest, like every other container image here, rather than
+      # a GitHub-Action-based Nix installer — the container already has Nix
+      # built in, so there's no separate action to pin and no install step
+      # to fail independently of the build itself. Version in the comment is
+      # what `nix --version` inside the image reports.
+      image: nixos/nix@sha256:7a007c766426c1877758ddc5cb87a965ac131fc78c582ce0083d922d51ae945c # 2.35.2
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: nix flake check
+        run: nix flake check
+      - name: nix build
+        run: nix build .#example -L
+      - name: smoke test
+        run: ./result/bin/example
+
+  lint-nix:
+    runs-on: ubuntu-24.04
+    container:
+      image: nixos/nix@sha256:7a007c766426c1877758ddc5cb87a965ac131fc78c582ce0083d922d51ae945c # 2.35.2
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: statix
+        run: nix run nixpkgs#statix -- check .
+      - name: deadnix
+        run: nix run nixpkgs#deadnix -- --fail .
+      - name: nixpkgs-fmt --check
+        # The pre-commit hook's fixer's twin: re-run the formatter in
+        # check-only mode rather than rewriting anything here.
+        run: nix run nixpkgs#nixpkgs-fmt -- --check .
+
+  # Layout and structure of everything Markdown/YAML this repo owns.
+  format:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - name: bun install
+        # Frozen, so a drifted lockfile fails the job rather than silently
+        # resolving to something nobody committed.
+        run: bun install --frozen-lockfile
+      - name: prettier --check
+        run: bun run format:check
+      - name: markdownlint
+        run: bun run lint:md
+
+  # A hook is something you can skip, and the version number depends on
+  # these messages being right, so the whole branch is checked here too.
+  commits:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      - name: commitlint
+        run: |
+          bunx commitlint \
+            --from "${{ github.event.pull_request.base.sha }}" \
+            --to "${{ github.event.pull_request.head.sha }}" \
+            --verbose

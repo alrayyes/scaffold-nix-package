@@ -1,0 +1,51 @@
+# Runs even though nothing deploys from this repo: a dependency bump that
+# needs a config change on our side surfaces here, on the template, instead
+# of on day one of the first real project cloned from it. Costs nothing to
+# leave on either: public repos get unlimited GitHub Actions minutes.
+#
+# Dependabot raises the pull request; CI decides whether it lands. Everything
+# here is pinned to an exact version, which is the whole reason this works —
+# a floating range drifts silently and there's nothing to raise a pull
+# request about.
+#
+# One pin Dependabot can't see, updated by hand instead: the container image
+# digests in .github/workflows/*.yml and lefthook.yml (nixos/nix,
+# zricethezav/gitleaks). None of those live in an ecosystem Dependabot
+# watches. flake.lock is the same story — no Nix ecosystem support here
+# either — see README.md for `nix flake update`.
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Amsterdam
+    commit-message:
+      # ci: rather than fix: — this changes the pipeline, not what a
+      # project stamped from this template ships.
+      prefix: ci
+      include: scope
+    groups:
+      actions:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  # Nothing here is JavaScript. package.json exists so commitlint can
+  # resolve the shared config it extends, which bunx alone cannot do.
+  - package-ecosystem: bun
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Amsterdam
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      tooling:
+        patterns: ["*"]
+        update-types: [minor, patch]

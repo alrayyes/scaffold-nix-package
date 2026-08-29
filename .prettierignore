@@ -1,0 +1,9 @@
+# Prettier is here to fill the gaps around Nix's own tooling, which formats
+# and lints *.nix itself — today that means Markdown and YAML.
+node_modules/
+.bun-cache/
+bun.lock
+flake.lock
+
+# Written by the release job, not by hand.
+CHANGELOG.md
