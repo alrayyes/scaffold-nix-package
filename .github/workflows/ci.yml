@@ -17,26 +17,31 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  # Flakes are still an experimental Nix feature; the nixos/nix image ships
-  # with both disabled by default, so every job that runs `nix` needs this.
-  NIX_CONFIG: "experimental-features = nix-command flakes"
-
 jobs:
   # Proves the packaging itself, not just the linters around it: evaluates
   # every flake output for the runner's system and builds the derivation the
   # template actually ships.
+  #
+  # Runs on the bare runner via cachix/install-nix-action rather than inside
+  # a nixos/nix container: GitHub Actions bind-mounts its own Node runtime
+  # into a job's container to run JS-based actions like actions/checkout, and
+  # that Node binary needs an FHS-standard dynamic linker path
+  # (/lib64/ld-linux-x86-64.so.2) that a NixOS-style image deliberately
+  # doesn't have — confirmed live, `actions/checkout` itself failed with
+  # `exec /__e/node24/bin/node: no such file or directory` before this
+  # switched away from the container. install-nix-action sidesteps the whole
+  # problem by installing Nix onto the runner's own Ubuntu filesystem
+  # instead, which is why it's used here over the container-pinning
+  # discipline the rest of this repo's images follow — it's still pinned to
+  # a full commit SHA, same as any other action.
   build:
     runs-on: ubuntu-24.04
-    container:
-      # Pinned by digest, like every other container image here, rather than
-      # a GitHub-Action-based Nix installer — the container already has Nix
-      # built in, so there's no separate action to pin and no install step
-      # to fail independently of the build itself. Version in the comment is
-      # what `nix --version` inside the image reports.
-      image: nixos/nix@sha256:7a007c766426c1877758ddc5cb87a965ac131fc78c582ce0083d922d51ae945c # 2.35.2
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
       - name: nix flake check
         run: nix flake check
       - name: nix build
@@ -46,10 +51,12 @@ jobs:
 
   lint-nix:
     runs-on: ubuntu-24.04
-    container:
-      image: nixos/nix@sha256:7a007c766426c1877758ddc5cb87a965ac131fc78c582ce0083d922d51ae945c # 2.35.2
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
       - name: statix
         run: nix run nixpkgs#statix -- check .
       - name: deadnix

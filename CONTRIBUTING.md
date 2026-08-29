@@ -8,8 +8,8 @@ for whoever stamps a project out of it.
 - **[Nix](https://nixos.org/download)**, with flakes enabled (`nix.conf`
   needs `experimental-features = nix-command flakes`, or pass
   `--extra-experimental-features 'nix-command flakes'` on every invocation —
-  the second is what CI does, since the container it runs in ships both
-  disabled by default).
+  CI passes the same setting through `cachix/install-nix-action`'s
+  `extra_nix_config`, since a fresh Nix install ships both disabled).
 - **[bun](https://bun.sh)** for the tooling that isn't Nix — commitlint,
   Prettier and markdownlint. There's a `package.json`, but nothing here is
   JavaScript; it exists only so those tools resolve and stay pinned.
