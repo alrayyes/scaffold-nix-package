@@ -7,3 +7,7 @@ flake.lock
 
 # Written by the release job, not by hand.
 CHANGELOG.md
+
+# `openspec init`'s generated skill/command docs — somebody else's docs,
+# held to somebody else's rules.
+.claude/
