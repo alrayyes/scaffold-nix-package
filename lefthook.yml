@@ -58,19 +58,25 @@ commit-msg:
 pre-push:
   parallel: true
   jobs:
-    # Builds every package and devShell output for the current system and
-    # evaluates the rest — the same thing `nix flake check` always did, run
-    # here rather than reinvented as a separate build+eval pair of jobs.
+    # Scoped to *.nix like the pre-commit jobs above: none of these read a
+    # path list (flake-check evaluates the whole flake, the other three walk
+    # the tree themselves), so the glob only decides whether it's worth
+    # running at all — a Markdown-only push has no reason to fail because
+    # the pushing environment has no Nix toolchain on PATH.
     - name: flake-check
+      glob: "*.nix"
       run: nix flake check
 
     - name: nixpkgs-fmt
+      glob: "*.nix"
       run: nixpkgs-fmt --check .
 
     - name: statix
+      glob: "*.nix"
       run: statix check .
 
     - name: deadnix
+      glob: "*.nix"
       run: deadnix --fail .
 
     # These are `package.json` scripts rather than the commands spelled out,
