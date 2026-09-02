@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/alrayyes/scaffold-nix-package/compare/v0.1.0...v0.1.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **ci:** require actual status checks on main, plus the hook fix that unblocked pushing it ([#6](https://github.com/alrayyes/scaffold-nix-package/issues/6)) ([baf5c6d](https://github.com/alrayyes/scaffold-nix-package/commit/baf5c6d7ac3d5ce8b547b705bc41bfaaaedbb697)), closes [#5](https://github.com/alrayyes/scaffold-nix-package/issues/5)
+
 ## 0.1.0 (2026-08-29)
 
 
