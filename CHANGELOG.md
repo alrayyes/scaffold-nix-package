@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/alrayyes/scaffold-nix-package/compare/v0.1.1...v0.1.2) (2026-09-09)
+
+
+### Bug Fixes
+
+* **deps:** downgrade bun.lock to lockfileVersion 1 for Dependabot ([#12](https://github.com/alrayyes/scaffold-nix-package/issues/12)) ([64868b5](https://github.com/alrayyes/scaffold-nix-package/commit/64868b5e36e3e7b5545f86a4503597e536a02a8b))
+
 ## [0.1.1](https://github.com/alrayyes/scaffold-nix-package/compare/v0.1.0...v0.1.1) (2026-09-02)
 
 
