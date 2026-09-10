@@ -6,9 +6,21 @@
 # pull_request, not pull_request_target: release-please's pull request
 # comes from a branch on this repo, never a fork, so there's no untrusted
 # checkout to guard against.
+#
+# types explicitly includes labeled: release-please-action opens the pull
+# request and applies the autorelease: pending label as two separate API
+# calls, and the opened event's payload is a snapshot taken at whichever
+# of those two calls GitHub happens to have applied first — a race, not a
+# guarantee. Relying on the default types (opened, synchronize, reopened)
+# alone meant a lost race left the label attached with no event left to
+# re-check it against, and the pull request sat until merged by hand
+# (scaffold-nix-package#15). labeled re-fires this workflow once the label
+# actually lands, whichever call won the race.
 name: release-auto-merge
 
-on: pull_request
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
 
 permissions:
   contents: write
