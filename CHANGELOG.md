@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/alrayyes/scaffold-nix-package/compare/v0.1.2...v0.1.3) (2026-09-10)
+
+
+### Bug Fixes
+
+* **ci:** trigger release-auto-merge on labeled, not just opened ([#16](https://github.com/alrayyes/scaffold-nix-package/issues/16)) ([57adc54](https://github.com/alrayyes/scaffold-nix-package/commit/57adc54bb202d4b9875428d8b6d93c53ede81efd)), closes [#15](https://github.com/alrayyes/scaffold-nix-package/issues/15)
+
 ## [0.1.2](https://github.com/alrayyes/scaffold-nix-package/compare/v0.1.1...v0.1.2) (2026-09-09)
 
 
