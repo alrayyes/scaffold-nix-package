@@ -2,10 +2,9 @@
 
 A [GitHub template repository](https://github.com/alrayyes/scaffold-nix-package)
 for packaging any project as a Nix derivation. It's the GitHub-native sibling
-of a template repo of the same name on
-[git.higherlearning.eu](https://git.higherlearning.eu/alrayyes/scaffold-nix-package)
-— same idea, GitHub-native tooling (Actions, Dependabot, release-please)
-instead of Forgejo's.
+of a template repo of the same name on a private Forgejo instance — same
+idea, GitHub-native tooling (Actions, Dependabot, release-please) instead of
+Forgejo's.
 
 Use the green **Use this template** button (or
 `gh repo create <name> --template alrayyes/scaffold-nix-package`) rather than
