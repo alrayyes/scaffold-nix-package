@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4](https://github.com/alrayyes/scaffold-nix-package/compare/v0.1.3...v0.1.4) (2026-10-09)
+
+
+### Bug Fixes
+
+* **hooks:** run statix and deadnix only at pre-push ([45e7235](https://github.com/alrayyes/scaffold-nix-package/commit/45e7235044c11ab1ef55e6cf219f3fc85f2e2cf2))
+* **hooks:** run statix and deadnix only at pre-push ([2de838c](https://github.com/alrayyes/scaffold-nix-package/commit/2de838c37bdf40e076c440380a5cb5a5b2b56f6b))
+
 ## [0.1.3](https://github.com/alrayyes/scaffold-nix-package/compare/v0.1.2...v0.1.3) (2026-09-10)
 
 
