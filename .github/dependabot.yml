@@ -8,11 +8,11 @@
 # a floating range drifts silently and there's nothing to raise a pull
 # request about.
 #
-# One pin Dependabot can't see, updated by hand instead: the container image
-# digests in .github/workflows/*.yml and lefthook.yml (nixos/nix,
-# ghcr.io/gitleaks/gitleaks; automated tracking is alrayyes/dotfiles#938).
-# None of those live in an ecosystem Dependabot watches. flake.lock is the same story — no Nix ecosystem support here
-# either — see README.md for `nix flake update`.
+# One pin Dependabot can't see, updated by hand: the ghcr.io/gitleaks/gitleaks
+# image digest in .github/workflows/gitleaks.yml (automated tracking is
+# alrayyes/dotfiles#938). It doesn't live in an ecosystem Dependabot watches.
+# flake.lock is the same story, with no Nix ecosystem support here either; see
+# README.md for `nix flake update`.
 version: 2
 
 updates:
