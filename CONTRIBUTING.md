@@ -17,6 +17,9 @@ for whoever stamps a project out of it.
   `nix develop` (or let direnv load `flake.nix` via a `.envrc` containing
   `use flake`) to put all three on `PATH`. The pre-commit and pre-push
   hooks assume that shell.
+- **[gitleaks](https://github.com/gitleaks/gitleaks)** for secret scanning,
+  installed from your package manager. The hooks run it on the staged
+  changes and on the history; CI runs it from a pinned container image.
 
 One command installs the JS-side linters and the git hooks:
 

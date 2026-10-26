@@ -13,6 +13,9 @@
 # commit should not fail over a quote style a tool can settle by itself.
 pre-commit:
   jobs:
+    - name: gitleaks
+      run: gitleaks git --staged --redact --no-banner
+
     - name: nixpkgs-fmt
       glob: "*.nix"
       run: nixpkgs-fmt {staged_files}
@@ -49,9 +52,15 @@ commit-msg:
 #
 # Parallel because of that: nothing here touches a file, so no job can be
 # reading what another is rewriting.
+#
+# gitleaks scans the whole history rather than the unpushed range: it takes a
+# second or two at this size, and CI does the same (rules/secrets.md).
 pre-push:
   parallel: true
   jobs:
+    - name: gitleaks
+      run: gitleaks git --redact --no-banner
+
     # Scoped to *.nix like the pre-commit jobs above: none of these read a
     # path list (flake-check evaluates the whole flake, the other three walk
     # the tree themselves), so the glob only decides whether it's worth
