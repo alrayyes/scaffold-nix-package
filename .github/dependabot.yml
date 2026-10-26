@@ -10,8 +10,8 @@
 #
 # One pin Dependabot can't see, updated by hand instead: the container image
 # digests in .github/workflows/*.yml and lefthook.yml (nixos/nix,
-# zricethezav/gitleaks). None of those live in an ecosystem Dependabot
-# watches. flake.lock is the same story — no Nix ecosystem support here
+# ghcr.io/gitleaks/gitleaks; automated tracking is alrayyes/dotfiles#938).
+# None of those live in an ecosystem Dependabot watches. flake.lock is the same story — no Nix ecosystem support here
 # either — see README.md for `nix flake update`.
 version: 2
 
