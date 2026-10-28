@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/alrayyes/scaffold-nix-package/compare/v0.1.4...v0.1.5) (2026-10-28)
+
+
+### Bug Fixes
+
+* **ci:** stop release-auto-merge cancelling its own labeled run ([#38](https://github.com/alrayyes/scaffold-nix-package/issues/38)) ([464eef4](https://github.com/alrayyes/scaffold-nix-package/commit/464eef4e21ae7b5ebd43b18dc700976b35afa814))
+
 ## [0.1.4](https://github.com/alrayyes/scaffold-nix-package/compare/v0.1.3...v0.1.4) (2026-10-09)
 
 
