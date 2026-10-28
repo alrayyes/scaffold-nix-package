@@ -26,10 +26,10 @@ permissions:
   contents: write
   pull-requests: write
 
-# Queue, don't cancel: the opened run skips (no label yet) and the labeled
-# run a second later would cancel the one still in flight,
-# so auto-merge never gets armed. Arming is idempotent, so a queued rerun
-# is harmless.
+# Queue, don't cancel: the opened and labeled events share a group, and
+# cancelling let the label-less opened run kill the labeled run that
+# would arm auto-merge. Arming is idempotent, so a queued rerun is
+# harmless.
 concurrency:
   group: release-auto-merge-${{ github.event.pull_request.number }}
   cancel-in-progress: false
